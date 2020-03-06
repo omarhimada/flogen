@@ -96,7 +96,7 @@ namespace FloGen
           // Choose a random index from the 'random indices' array
           int indexOfCartItemToUse = randomIndicesToChooseFrom[indexOfRandomIndexToChoose];
 
-          /* The random index of the cart item to use increments with orderIndex
+          /* The random index of the cart item to use increments continually
            * in order for each order to have randomized cart items */
           indexOfRandomIndexToChoose++;
 
