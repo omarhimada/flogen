@@ -15,17 +15,17 @@ namespace FloGen
     /// <summary>
     /// Maximum length of the SKU to use when generating cart orders
     /// </summary>
-    private const int MaximumLengthOfSku = 5;
+    private const int MaximumLengthOfSku = 4;
 
     /// <summary>
     /// Maximum quantity for each SKU in the generated cart orders
     /// </summary>
-    private const int MaximumSkuQuantity = 10;
+    private const int MaximumSkuQuantity = 8;
 
     /// <summary>
     /// Maximum quantity of cart items in the generated cart orders
     /// </summary>
-    private const int MaximumCartItemQuantity = 4;
+    private const int MaximumCartItemQuantity = 5;
 
     /// <summary>
     /// Number of random orders to generate
@@ -68,12 +68,6 @@ namespace FloGen
       // Random list of indices in order to pick random cart items from manyRandomCartItems
       int[] randomIndicesToChooseFrom = 
         FisherYatesShuffle.RandomIndices(_random, manyRandomCartItems.Length);
-
-      // Check if there is a sufficient number of random cart items to choose from
-      if (manyRandomCartItems.Length < OrdersToGenerate)
-      {
-        Console.WriteLine("There are not enough randomized cart items to avoid duplicates. Consider increasing MaximumLengthOfSku.");
-      }
 
       // Many random orders (to output)
       ManyRandomOrders manyRandomOrders = new ManyRandomOrders
