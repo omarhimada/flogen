@@ -3,6 +3,7 @@ using FloGen.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -40,6 +41,10 @@ namespace FloGen
 
     static void Main(string[] args)
     {
+      // Used for outputting generation time
+      Stopwatch sw = new Stopwatch();
+      sw.Start();
+
       // Generate random SKUs using these characters
       char[] charactersToUse = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
@@ -118,6 +123,9 @@ namespace FloGen
       // Serialize the random orders and write to file
       string json = JsonConvert.SerializeObject(manyRandomOrders, Formatting.Indented);
       File.WriteAllText(@$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.json", json);
+      
+      Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
+      Console.ReadLine();
     }
   }
 }

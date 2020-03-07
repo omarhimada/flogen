@@ -5,3 +5,5 @@
 /FloGen/bin/Debug/netcoreapp3.1
 /FloGen/.vs/FloGen/v16
 /FloGen/obj
+/FloGen/bin/Release/netcoreapp3.1
+/FloGen/.vs/FloGen/DesignTimeBuild
