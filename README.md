@@ -22,71 +22,75 @@ The parameters can be configured and the output is serialized to a local JSON fi
 *RandomOrders-2020-03-06-11-19-07.json* (22 MB with indentation, 9 MB with no indentation)
 ```
 {
-	"Orders": [
-		{
-			"CustomerId": 1,
-			"CartItems": [
-				{
-					"Sku": "96",
-					"Quantity": 5
-				}
-			]
-		},
-		{
-			"CustomerId": 2,
-			"CartItems": [
-				{
-					"Sku": "91849",
-					"Quantity": 9
-				},
-				{
-					"Sku": "69728",
-					"Quantity": 9
-				}
-			]
-		},
-		{
-			"...": "..."
-		},
-		{
-			"CustomerId": 99998,
-			"CartItems": [
-				{
-					"Sku": "62147",
-					"Quantity": 2
-				},
-				{
-					"Sku": "79487",
-					"Quantity": 1
-				}
-			]
-		},
-		{
-			"CustomerId": 99999,
-			"CartItems": [
-				{
-					"Sku": "94720",
-					"Quantity": 2
-				},
-				{
-					"Sku": "20844",
-					"Quantity": 6
-				}
-			]
-		},
-		{
-			"CustomerId": 100000,
-			"CartItems": [
-				{
-					"Sku": "86725",
-					"Quantity": 3
-				},
-				{
-					"Sku": "94505",
-					"Quantity": 8
-				}
-			]
-		}
-	]
+  "Orders": [
+    {
+      "CustomerId": 1,
+      "CartItems": [
+        {
+          "Sku": "96",
+          "Quantity": 5
+        }
+      ]
+    },
+    {
+      "CustomerId": 2,
+      "CartItems": [
+        {
+          "Sku": "91849",
+          "Quantity": 9
+        },
+        {
+          "Sku": "69728",
+          "Quantity": 9
+        }
+      ]
+    },
+    {
+      "...": "..."
+    },
+    {
+      "CustomerId": 99998,
+      "CartItems": [
+        {
+          "Sku": "62147",
+          "Quantity": 2
+        },
+        {
+          "Sku": "79487",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "CustomerId": 99999,
+      "CartItems": [
+        {
+          "Sku": "94720",
+          "Quantity": 2
+        },
+        {
+          "Sku": "20844",
+          "Quantity": 6
+        },
+        {
+          "Sku": "11532",
+          "Quantity": 1
+        }
+      ]
+    },
+    {
+      "CustomerId": 100000,
+      "CartItems": [
+        {
+          "Sku": "86725",
+          "Quantity": 3
+        },
+        {
+          "Sku": "94505",
+          "Quantity": 8
+        }
+      ]
+    }
+  ]
 }
 ```
