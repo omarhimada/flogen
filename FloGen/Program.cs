@@ -13,6 +13,11 @@ namespace FloGen
   {
     #region Configurable constants
     /// <summary>
+    /// Maximum number of unique customer IDs to spread across all generated orders
+    /// </summary>
+    private const int MaximumNumberOfCustomers = 8000;
+
+    /// <summary>
     /// Maximum length of the SKU to use when generating cart orders
     /// </summary>
     private const int MaximumLengthOfSku = 4;
@@ -20,17 +25,17 @@ namespace FloGen
     /// <summary>
     /// Maximum quantity for each SKU in the generated cart orders
     /// </summary>
-    private const int MaximumSkuQuantity = 8;
+    private const int MaximumSkuQuantity = 6;
 
     /// <summary>
     /// Maximum quantity of cart items in the generated cart orders
     /// </summary>
-    private const int MaximumCartItemQuantity = 5;
+    private const int MaximumCartItemQuantity = 4;
 
     /// <summary>
     /// Number of random orders to generate
     /// </summary>
-    private const long OrdersToGenerate = 100000;
+    private const long OrdersToGenerate = 50000;
     #endregion
 
     /// <summary>
@@ -79,8 +84,8 @@ namespace FloGen
       {
         CartOrder cartOrder = new CartOrder
         {
-          // Each generated cart order will have a different customer ID
-          CustomerId = orderIndex + 1
+          // Randomize the customer IDs
+          CustomerId = _random.Next(1, MaximumNumberOfCustomers)
         };
 
         // Randomize the number of cart items purchased by this customer
