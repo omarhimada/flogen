@@ -20,6 +20,7 @@ The parameters can be configured and the output is serialized to a local JSON fi
 
 #### Output:
 *RandomOrders-2020-03-06-11-19-07.json* (22 MB with indentation, 9 MB with no indentation)
+
 Generation time: ~550 milliseconds (0.55s)
 ```
 {
