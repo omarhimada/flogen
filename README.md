@@ -1,133 +1,93 @@
 # FloGen
 FloGen generates randomized data (e.g.: orders for an eCommerce website) for testing ML applications. For example, if you want to generate millions of dummy records to test your machine learning implementations, you can use FloGen to generate a configurable amount of random data to consume.
 
-SKUs, the quantity of cart items in an order, and the quantity of each SKU in those cart items are all randomized.
+Number of unique customer IDs, SKUs, the quantity of cart items in an order, and the quantity of each SKU in those cart items are all randomized.
 
 The parameters can be configured and the output is serialized to a local JSON file. 
 
 #### Example input:
+- **Maximum number of unique customer IDs to spread across all generated orders
+  - MaximumNumberOfCustomers = 8000
+  
 - **Maximum length of the SKU to use when generating cart orders**
   - MaximumLengthOfSku = 4
 
 - **Maximum quantity for each SKU in the generated cart orders**
-  - MaximumSkuQuantity = 8
+  - MaximumSkuQuantity = 6
 
 - **Maximum quantity of cart items in the generated cart orders**
-  - MaximumCartItemQuantity = 5
+  - MaximumCartItemQuantity = 4
 
 - **Number of random orders to generate**
-  - OrdersToGenerate = 100000
+  - OrdersToGenerate = 50000
 
 #### Output:
-*RandomOrders-2020-03-06-21-58-57.json* (25 MB with indentation, 10 MB with no indentation)
+*RandomOrders-2020-03-06-23-45-53.json* (10 MB with indentation, 4 MB with no indentation)
 
-Generation time: ~59 milliseconds (0.059s)
+Generation time: ~29 milliseconds (0.029s)
 ```
 {
   "Orders": [
     {
-      "CustomerId": 1,
+      "CustomerId": 6374,
       "CartItems": [
         {
-          "Sku": "8141",
+          "Sku": "6124",
           "Quantity": 3
         },
         {
-          "Sku": "9890",
-          "Quantity": 3
+          "Sku": "8010",
+          "Quantity": 4
         },
         {
-          "Sku": "2254",
-          "Quantity": 7
+          "Sku": "1714",
+          "Quantity": 3
         }
       ]
     },
     {
-      "CustomerId": 2,
+      "CustomerId": 3201,
       "CartItems": [
         {
-          "Sku": "6274",
+          "Sku": "174",
+          "Quantity": 4
+        },
+        {
+          "Sku": "6226",
+          "Quantity": 4
+        },
+        {
+          "Sku": "5907",
           "Quantity": 4
         }
       ]
     },
     {
-      "CustomerId": 3,
+      "CustomerId": 6912,
       "CartItems": [
         {
-          "Sku": "3545",
-          "Quantity": 5
-        },
-        {
-          "Sku": "0951",
-          "Quantity": 6
-        },
-        {
-          "Sku": "7046",
-          "Quantity": 5
-        }
-      ]
-    },
-    {
-      "CustomerId": 4,
-      "CartItems": [
-        {
-          "Sku": "9035",
-          "Quantity": 5
-        },
-        {
-          "Sku": "1307",
-          "Quantity": 4
-        },
-        {
-          "Sku": "1737",
-          "Quantity": 6
-        },
-        {
-          "Sku": "2714",
-          "Quantity": 5
-        }
-      ]
-    },
-    {
-      "CustomerId": 5,
-      "CartItems": [
-        {
-          "Sku": "2155",
-          "Quantity": 7
-        },
-        {
-          "Sku": "7253",
+          "Sku": "9289",
           "Quantity": 2
         },
         {
-          "Sku": "1679",
-          "Quantity": 7
-        },
-        {
-          "Sku": "5604",
+          "Sku": "8048",
           "Quantity": 5
         }
       ]
     },
     {
-      "CustomerId": 6,
+      "CustomerId": 1452,
       "CartItems": [
         {
-          "Sku": "599",
-          "Quantity": 6
-        }
-      ]
-    },
-    {
-      "CustomerId": 7,
-      "CartItems": [
-        {
-          "Sku": "2365",
+          "Sku": "1576",
           "Quantity": 4
         },
         {
-          "Sku": "4803",
+          "Sku": "5930",
+          "Quantity": 3
+        },
+        {
+          "Sku": "7660",
           "Quantity": 1
         }
       ]
@@ -136,70 +96,63 @@ Generation time: ~59 milliseconds (0.059s)
       "...": "..."
     },
     {
-      "CustomerId": 99997,
+      "CustomerId": 5036,
       "CartItems": [
         {
-          "Sku": "156",
+          "Sku": "1314",
+          "Quantity": 2
+        },
+        {
+          "Sku": "0728",
           "Quantity": 4
         },
         {
-          "Sku": "0943",
-          "Quantity": 3
-        },
-        {
-          "Sku": "6230",
+          "Sku": "8227",
           "Quantity": 3
         }
       ]
     },
     {
-      "CustomerId": 99998,
+      "CustomerId": 7162,
       "CartItems": [
         {
-          "Sku": "6810",
+          "Sku": "883",
+          "Quantity": 2
+        }
+      ]
+    },
+    {
+      "CustomerId": 1403,
+      "CartItems": [
+        {
+          "Sku": "9103",
+          "Quantity": 2
+        },
+        {
+          "Sku": "4015",
           "Quantity": 1
         },
         {
-          "Sku": "7576",
+          "Sku": "6077",
           "Quantity": 5
-        },
-        {
-          "Sku": "8050",
-          "Quantity": 3
         }
       ]
     },
     {
-      "CustomerId": 99999,
+      "CustomerId": 7364,
       "CartItems": [
         {
-          "Sku": "9461",
-          "Quantity": 5
-        },
-        {
-          "Sku": "6645",
+          "Sku": "622",
           "Quantity": 1
         }
       ]
     },
     {
-      "CustomerId": 100000,
+      "CustomerId": 1019,
       "CartItems": [
         {
-          "Sku": "8290",
-          "Quantity": 6
-        },
-        {
-          "Sku": "1081",
-          "Quantity": 7
-        },
-        {
-          "Sku": "4371",
-          "Quantity": 3
-        },
-        {
-          "Sku": "0513",
-          "Quantity": 3
+          "Sku": "1895",
+          "Quantity": 4
         }
       ]
     }
