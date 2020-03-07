@@ -6,6 +6,9 @@ Number of unique customer IDs, SKUs, the quantity of cart items in an order, and
 The parameters can be configured and the output is serialized to a local JSON file. 
 
 #### Example input:
+- **Number of random orders to generate**
+  - OrdersToGenerate = 50000
+  
 - **Maximum number of unique customer IDs to spread across all generated orders**
   - MaximumNumberOfCustomers = 8000
   
@@ -14,12 +17,13 @@ The parameters can be configured and the output is serialized to a local JSON fi
 
 - **Maximum quantity for each SKU in the generated cart orders**
   - MaximumSkuQuantity = 6
+  
+- **Number of variable quantities for each SKU across all orders**
+  - MaximumSkuQuantityVariance = 6
+    - *Each SKU will have, at most, this number of unique quantities across every cart item it's present in*
 
 - **Maximum quantity of cart items in the generated cart orders**
   - MaximumCartItemQuantity = 4
-
-- **Number of random orders to generate**
-  - OrdersToGenerate = 50000
 
 #### Output:
 *RandomOrders-2020-03-06-23-45-53.json* (10 MB with indentation, 4 MB with no indentation)
