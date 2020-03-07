@@ -4,18 +4,25 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using CsvHelper;
 
 namespace FloGen
 {
     class Program
     {
-        #region Configurable constants
+        #region Configure
         /// <summary>
         /// Number of random orders to generate
         /// </summary>
         private const long OrdersToGenerate = 50000;
+
+        /// <summary>
+        /// Generate random SKUs using these characters
+        /// </summary>
+        private static readonly char[] CharactersToUse = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         /// <summary>
         /// Maximum number of unique customer IDs to spread across all generated orders
@@ -55,15 +62,12 @@ namespace FloGen
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            // Generate random SKUs using these characters
-            char[] charactersToUse = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
             // List of possible SKUs up to MaximumLength (e.g.: 0001, 0002, 0003, ...9999)
             List<string> allSkuCombinations =
               Enumerable.Range(1, MaximumLengthOfSku)
                 .SelectMany(count =>
                     // Cartesian product
-                    Enumerable.Repeat(charactersToUse, count).CartesianProduct())
+                    Enumerable.Repeat(CharactersToUse, count).CartesianProduct())
                 .Select(combination =>
                     new string(combination.ToArray()))
                 .ToList();
@@ -88,7 +92,7 @@ namespace FloGen
 
             // Random list of indices in order to pick random cart items from manyRandomCartItems
             int[] randomIndicesToChooseFrom =
-                // Fisher-Yates shuffle
+                // Fisher-Yates shuffle 
                 FisherYatesShuffle.RandomIndices(_random, manyRandomCartItems.Length);
 
             // Many random orders (to output)
@@ -126,15 +130,56 @@ namespace FloGen
                 manyRandomOrders.Orders.Add(cartOrder);
             }
 
-            // Don't include JSON serialization in generation time metric
+            #region Generation finished - write to file
+            // Don't include serialization in generation time metric
             sw.Stop();
 
-            // Serialize the random orders and write to file
-            string json = JsonConvert.SerializeObject(manyRandomOrders, Formatting.Indented);
-            File.WriteAllText(@$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.json", json);
-
             Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
-            Console.ReadLine();
+
+            Console.WriteLine("Output CSV or JSON? [cC]|[jJ]");
+            string jsonOrCsvResponse = Console.ReadLine();
+
+            // Default to CSV output
+            bool outputCsv = true;
+            
+            const char useJson = 'j';
+            switch (jsonOrCsvResponse?.ToLowerInvariant()[0])
+            {
+                case null:
+                    Console.WriteLine("Invalid response. Defaulting to CSV");
+                    break;
+                case useJson:
+                    outputCsv = false;
+                    break;
+            }
+
+            string filePathToWriteTo = @$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
+
+            if (outputCsv)
+            {
+                // Write the random orders to a CSV file
+                using StreamWriter streamWriter = new StreamWriter($"{filePathToWriteTo}.csv");
+                using CsvWriter csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
+
+                var flattenedManyRandomOrders = 
+                  from order in manyRandomOrders.Orders
+                  from cartItem in order.CartItems
+                  select new
+                  {
+                    CustomerId = order.CustomerId,
+                    Sku = cartItem.Sku,
+                    Quantity = cartItem.Quantity
+                  };
+
+                csvWriter.WriteRecords(flattenedManyRandomOrders);
+            }
+            else
+            {
+                // Serialize the random orders and write to a JSON file
+                string json = JsonConvert.SerializeObject(manyRandomOrders, Formatting.Indented);
+                File.WriteAllText(@$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.json", json);
+            }
+            #endregion
         }
     }
 }
