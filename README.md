@@ -6,7 +6,7 @@ Number of unique customer IDs, SKUs, the quantity of cart items in an order, and
 The parameters can be configured and the output is serialized to a local JSON file. 
 
 #### Example input:
-- **Maximum number of unique customer IDs to spread across all generated orders
+- **Maximum number of unique customer IDs to spread across all generated orders**
   - MaximumNumberOfCustomers = 8000
   
 - **Maximum length of the SKU to use when generating cart orders**
