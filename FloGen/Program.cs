@@ -81,9 +81,6 @@ namespace FloGen
         Orders = new List<CartOrder>()
       };
 
-      // The index of the 'random indices' array to select the cart item to use when constructing each order
-      int indexOfRandomIndexToChoose = 0;
-
       for (int orderIndex = 0; orderIndex < OrdersToGenerate; orderIndex++)
       {
         CartOrder cartOrder = new CartOrder
@@ -98,18 +95,11 @@ namespace FloGen
         List<CartItem> cartItemsToAddToThisOrder = new List<CartItem>();
         for (int cartItemIndex = 0; cartItemIndex < numberOfItemsInThisOrder; cartItemIndex++)
         {
+          // The index of the 'random indices' array to select the cart item to use when constructing each order
+          int indexOfRandomIndexToChoose = _random.Next(0, randomIndicesToChooseFrom.Length - 1);
+
           // Choose a random index from the 'random indices' array
           int indexOfCartItemToUse = randomIndicesToChooseFrom[indexOfRandomIndexToChoose];
-
-          /* The random index of the cart item to use increments continually
-           * in order for each order to have randomized cart items */
-          indexOfRandomIndexToChoose++;
-
-          if (indexOfRandomIndexToChoose > randomIndicesToChooseFrom.Length - 1)
-          {
-            // If we ran out of random indices to choose from restart the indexOfRandomIndexToChoose
-            indexOfRandomIndexToChoose = 0;
-          }
 
           // Use this random index to get a random cart item
           cartItemsToAddToThisOrder.Add(manyRandomCartItems[indexOfCartItemToUse]);
@@ -119,6 +109,9 @@ namespace FloGen
 
         manyRandomOrders.Orders.Add(cartOrder);
       }
+
+      // Don't include JSON serialization in generation time metric
+      sw.Stop();
 
       // Serialize the random orders and write to file
       string json = JsonConvert.SerializeObject(manyRandomOrders, Formatting.Indented);
