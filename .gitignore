@@ -2,9 +2,7 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/FloGen/bin/Debug/netcoreapp3.1
-/FloGen/.vs/FloGen/v16
+/FloGen/bin
+/FloGen/.vs
 /FloGen/obj
-/FloGen/bin/Release/netcoreapp3.1
-/FloGen/.vs/FloGen/DesignTimeBuild
-/FloGen/FloGen.csproj.user
+/FloGen/*.user
