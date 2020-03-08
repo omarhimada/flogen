@@ -145,12 +145,12 @@ namespace FloGen
             const char useJson = 'j';
             switch (jsonOrCsvResponse?.ToLowerInvariant()[0])
             {
-                case null:
-                    Console.WriteLine("Invalid response. Defaulting to CSV");
-                    break;
                 case useJson:
                     outputCsv = false;
                     break;
+                default:
+                  Console.WriteLine("Invalid response. Defaulting to CSV");
+                  break;
             }
 
             string filePathToWriteTo = @$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
