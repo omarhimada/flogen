@@ -32,7 +32,7 @@ namespace FloGen
         /// <summary>
         /// Maximum length of the SKU to use when generating cart orders
         /// </summary>
-        private const int MaximumLengthOfSku = 4;
+        private const int MaximumLengthOfSku = 2;
 
         /// <summary>
         /// Maximum quantity for each SKU in the generated cart orders
