@@ -95,89 +95,11 @@ namespace FloGen
             return earliestDateTime.AddDays(_random.Next(range));
         }
 
-        // randomize order dates
-
-        static void Main(string[] args)
+        /// <summary>
+        /// Generation complete - output either CSV or JSON
+        /// </summary>
+        private static void OutputData(ManyRandomOrders ordersToOutput)
         {
-            // Used for outputting generation time
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            // List of possible SKUs up to MaximumLength (e.g.: 0001, 0002, 0003, ...9999)
-            List<string> allSkuCombinations =
-              Enumerable.Range(1, MaximumLengthOfSku)
-                .SelectMany(count =>
-                    // Cartesian product
-                    Enumerable.Repeat(CharactersToUse, count).CartesianProduct())
-                .Select(combination =>
-                    new string(combination.ToArray()))
-                .ToList();
-
-            // Duplicate each SKU up to MaximumSkuQuantityVariance times
-            List<string> allSkuCombinationsWithVariableDuplicates =
-                allSkuCombinations
-                    .SelectMany(sku =>
-                        Enumerable.Repeat(sku, _random.Next(1, MaximumSkuQuantityVariance)))
-                    .ToList();
-
-            // Random cart items
-            CartItem[] manyRandomCartItems =
-              allSkuCombinations
-                .Select(sku =>
-                  new CartItem
-                  {
-                      Sku = sku,
-                      Quantity = _random.Next(1, MaximumSkuQuantity)
-                  })
-              .ToArray();
-
-            // Random list of indices in order to pick random cart items from manyRandomCartItems
-            int[] randomIndicesToChooseFrom =
-                // Fisher-Yates shuffle 
-                FisherYatesShuffle.RandomIndices(_random, manyRandomCartItems.Length);
-
-            // Many random orders (to output)
-            ManyRandomOrders manyRandomOrders = new ManyRandomOrders
-            {
-                Orders = new List<CartOrder>()
-            };
-
-            for (int orderIndex = 0; orderIndex < OrdersToGenerate; orderIndex++)
-            {
-                CartOrder cartOrder = new CartOrder
-                {
-                    CustomerId = _random.Next(1, MaximumNumberOfCustomers),
-                    Email = RandomEmail(),
-                    OrderDate = RandomDateTime()
-                };
-
-                // Randomize the number of cart items purchased by this customer
-                int numberOfItemsInThisOrder = _random.Next(1, MaximumCartItemQuantity);
-
-                List<CartItem> cartItemsToAddToThisOrder = new List<CartItem>();
-                for (int cartItemIndex = 0; cartItemIndex < numberOfItemsInThisOrder; cartItemIndex++)
-                {
-                    // The index of the 'random indices' array to select the cart item to use when constructing each order
-                    int indexOfRandomIndexToChoose = _random.Next(0, randomIndicesToChooseFrom.Length - 1);
-
-                    // Choose a random index from the 'random indices' array
-                    int indexOfCartItemToUse = randomIndicesToChooseFrom[indexOfRandomIndexToChoose];
-
-                    // Use this random index to get a random cart item
-                    cartItemsToAddToThisOrder.Add(manyRandomCartItems[indexOfCartItemToUse]);
-                }
-
-                cartOrder.CartItems = cartItemsToAddToThisOrder;
-
-                manyRandomOrders.Orders.Add(cartOrder);
-            }
-
-            #region Generation finished - write to file
-            // Don't include serialization in generation time metric
-            sw.Stop();
-
-            Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
-
             Console.WriteLine("Output CSV or JSON? [cC]|[jJ]");
             string jsonOrCsvResponse = Console.ReadLine();
 
@@ -207,7 +129,7 @@ namespace FloGen
                 using CsvWriter csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
 
                 var flattenedManyRandomOrders =
-                  from order in manyRandomOrders.Orders
+                  from order in ordersToOutput.Orders
                   from cartItem in order.CartItems
                   select new
                   {
@@ -223,10 +145,147 @@ namespace FloGen
             else
             {
                 // Serialize the random orders and write to a JSON file
-                string json = JsonConvert.SerializeObject(manyRandomOrders, Formatting.Indented);
+                string json = JsonConvert.SerializeObject(ordersToOutput, Formatting.None); // None for file size
                 File.WriteAllText(@$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.json", json);
             }
-            #endregion
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="args">true to use retail.dat (from http://fimi.uantwerpen.be/data/)</param>
+        static void Main(string[] args)
+        {
+            // Used for outputting generation time
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            if (args.Length == 1 && bool.TryParse(args[0], out bool useRetailDat))
+            {
+                // Use retail.dat file to generate orders with not-so-random customer IDs, emails and order dates
+                if (useRetailDat)
+                {
+                    ManyRandomOrders notSoRandomOrders = new ManyRandomOrders
+                    {
+                        Orders = new List<CartOrder>()
+                    };
+
+                    string line;
+                    // Read the retail.dat file
+                    StreamReader file = new StreamReader(@"retail.dat");
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        int[] skusInTransaction = line.Trim().Split(" ").Select(int.Parse).ToArray();
+                        int[] distinctSkus = skusInTransaction.Distinct().ToArray();
+
+                        List<CartItem> cartItems = new List<CartItem>();
+                        foreach (int sku in distinctSkus)
+                        {
+                            cartItems.Add(new CartItem
+                            {
+                                Sku = sku.ToString(),
+                                Quantity = skusInTransaction.Count(i => i == sku)
+                            });
+                        }
+
+                        CartOrder cartOrder = new CartOrder
+                        {
+                            CustomerId = _random.Next(1, MaximumNumberOfCustomers),
+                            Email = RandomEmail(),
+                            OrderDate = RandomDateTime(),
+                            CartItems = cartItems
+                        };
+
+                        notSoRandomOrders.Orders.Add(cartOrder);
+                    }
+
+                    // Don't include serialization in generation time metric
+                    sw.Stop();
+
+                    Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
+
+                    OutputData(notSoRandomOrders);
+                }
+            }
+            else
+            {
+                // Don't use retail.dat (random SKUs & quantities)
+
+                // List of possible SKUs up to MaximumLength (e.g.: 0001, 0002, 0003, ...9999)
+                List<string> allSkuCombinations =
+                  Enumerable.Range(1, MaximumLengthOfSku)
+                    .SelectMany(count =>
+                        // Cartesian product
+                        Enumerable.Repeat(CharactersToUse, count).CartesianProduct())
+                    .Select(combination =>
+                        new string(combination.ToArray()))
+                    .ToList();
+
+                // Duplicate each SKU up to MaximumSkuQuantityVariance times
+                List<string> allSkuCombinationsWithVariableDuplicates =
+                    allSkuCombinations
+                        .SelectMany(sku =>
+                            Enumerable.Repeat(sku, _random.Next(1, MaximumSkuQuantityVariance)))
+                        .ToList();
+
+                // Random cart items
+                CartItem[] manyRandomCartItems =
+                  allSkuCombinations
+                    .Select(sku =>
+                      new CartItem
+                      {
+                          Sku = sku,
+                          Quantity = _random.Next(1, MaximumSkuQuantity)
+                      })
+                  .ToArray();
+
+                // Random list of indices in order to pick random cart items from manyRandomCartItems
+                int[] randomIndicesToChooseFrom =
+                    // Fisher-Yates shuffle 
+                    FisherYatesShuffle.RandomIndices(_random, manyRandomCartItems.Length);
+
+                // Many random orders (to output)
+                ManyRandomOrders manyRandomOrders = new ManyRandomOrders
+                {
+                    Orders = new List<CartOrder>()
+                };
+
+                for (int orderIndex = 0; orderIndex < OrdersToGenerate; orderIndex++)
+                {
+                    CartOrder cartOrder = new CartOrder
+                    {
+                        CustomerId = _random.Next(1, MaximumNumberOfCustomers),
+                        Email = RandomEmail(),
+                        OrderDate = RandomDateTime()
+                    };
+
+                    // Randomize the number of cart items purchased by this customer
+                    int numberOfItemsInThisOrder = _random.Next(1, MaximumCartItemQuantity);
+
+                    List<CartItem> cartItemsToAddToThisOrder = new List<CartItem>();
+                    for (int cartItemIndex = 0; cartItemIndex < numberOfItemsInThisOrder; cartItemIndex++)
+                    {
+                        // The index of the 'random indices' array to select the cart item to use when constructing each order
+                        int indexOfRandomIndexToChoose = _random.Next(0, randomIndicesToChooseFrom.Length - 1);
+
+                        // Choose a random index from the 'random indices' array
+                        int indexOfCartItemToUse = randomIndicesToChooseFrom[indexOfRandomIndexToChoose];
+
+                        // Use this random index to get a random cart item
+                        cartItemsToAddToThisOrder.Add(manyRandomCartItems[indexOfCartItemToUse]);
+                    }
+
+                    cartOrder.CartItems = cartItemsToAddToThisOrder;
+
+                    manyRandomOrders.Orders.Add(cartOrder);
+                }
+
+                // Don't include serialization in generation time metric
+                sw.Stop();
+
+                Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
+
+                OutputData(manyRandomOrders);
+            }
         }
     }
 }
