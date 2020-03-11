@@ -28,141 +28,61 @@ The parameters can be configured and the output is serialized to a local JSON fi
   - MaximumSkuQuantityVariance = 6
     - *Each SKU will have, at most, this number of unique quantities across every cart item it's present in*
 
-#### Output:
-*RandomOrders-2020-03-06-23-45-53.json* (10 MB with indentation, 4 MB with no indentation)
+- **The characters to choose from when generating random email prefixes**
+  - AvailableCharsForRandomEmailPrefixes = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-Generation time: ~29 milliseconds (0.029s)
-```
+- **The strings to choose from when generating random email suffixes**
+  - AvailableStringsForRandomEmailSuffixes = ["@yahoo.ru", "@hotmail.co.uk", "@gmail.com", "@monarchy.gov"]
+
+#### Output:
+*RandomOrders-2020-03-10-20-38-50.json* (14 MB with indentation, 7 MB with no indentation)
+50,000 orders
+Generation time: ~72 milliseconds (0.072s)
+````JSON
 {
   "Orders": [
     {
-      "CustomerId": 6374,
-      "CartItems": [
+      "customerId": 2268,
+      "email": "o9v1vmk57d9qmh36@hotmail.co.uk",
+      "cart": [
         {
-          "Sku": "6124",
-          "Quantity": 3
+          "sku": "72",
+          "quantity": 1
         },
         {
-          "Sku": "8010",
-          "Quantity": 4
-        },
-        {
-          "Sku": "1714",
-          "Quantity": 3
+          "sku": "70",
+          "quantity": 4
         }
-      ]
+      ],
+      "orderDate": "2011-06-27T00:00:00"
     },
     {
-      "CustomerId": 3201,
-      "CartItems": [
+      "customerId": 956,
+      "email": "gkd76xyus1kd5ap5@gmail.com",
+      "cart": [
         {
-          "Sku": "174",
-          "Quantity": 4
+          "sku": "96",
+          "quantity": 3
         },
         {
-          "Sku": "6226",
-          "Quantity": 4
-        },
-        {
-          "Sku": "5907",
-          "Quantity": 4
+          "sku": "6",
+          "quantity": 4
         }
-      ]
+      ],
+      "orderDate": "2019-07-27T00:00:00"
     },
     {
-      "CustomerId": 6912,
-      "CartItems": [
+      "customerId": 7777,
+      "email": "ils0jbwa2adk3kyx@hotmail.co.uk",
+      "cart": [
         {
-          "Sku": "9289",
-          "Quantity": 2
-        },
-        {
-          "Sku": "8048",
-          "Quantity": 5
+          "sku": "66",
+          "quantity": 2
         }
-      ]
+      ],
+      "orderDate": "2009-10-02T00:00:00"
     },
-    {
-      "CustomerId": 1452,
-      "CartItems": [
-        {
-          "Sku": "1576",
-          "Quantity": 4
-        },
-        {
-          "Sku": "5930",
-          "Quantity": 3
-        },
-        {
-          "Sku": "7660",
-          "Quantity": 1
-        }
-      ]
-    },
-    {
-      "...": "..."
-    },
-    {
-      "CustomerId": 5036,
-      "CartItems": [
-        {
-          "Sku": "1314",
-          "Quantity": 2
-        },
-        {
-          "Sku": "0728",
-          "Quantity": 4
-        },
-        {
-          "Sku": "8227",
-          "Quantity": 3
-        }
-      ]
-    },
-    {
-      "CustomerId": 7162,
-      "CartItems": [
-        {
-          "Sku": "883",
-          "Quantity": 2
-        }
-      ]
-    },
-    {
-      "CustomerId": 1403,
-      "CartItems": [
-        {
-          "Sku": "9103",
-          "Quantity": 2
-        },
-        {
-          "Sku": "4015",
-          "Quantity": 1
-        },
-        {
-          "Sku": "6077",
-          "Quantity": 5
-        }
-      ]
-    },
-    {
-      "CustomerId": 7364,
-      "CartItems": [
-        {
-          "Sku": "622",
-          "Quantity": 1
-        }
-      ]
-    },
-    {
-      "CustomerId": 1019,
-      "CartItems": [
-        {
-          "Sku": "1895",
-          "Quantity": 4
-        }
-      ]
-    }
+    { "..." }
   ]
 }
-```
+````
