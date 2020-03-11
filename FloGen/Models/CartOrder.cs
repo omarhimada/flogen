@@ -1,16 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
 
 namespace FloGen.Models
 {
-  public class CartOrder
-  {
-    [JsonPropertyName("customerId")]
-    public int CustomerId { get; set; }
+    public class CartOrder
+    {
+        [JsonProperty("customerId")]
+        public int CustomerId { get; set; }
 
-    [JsonPropertyName("cart")]
-    public IEnumerable<CartItem> CartItems { get; set; }
-  }
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        [JsonProperty("cart")]
+        public IEnumerable<CartItem> CartItems { get; set; }
+
+        [JsonProperty("orderDate")]
+        public DateTime OrderDate { get; set; }
+    }
 }

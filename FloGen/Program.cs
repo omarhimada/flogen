@@ -48,6 +48,22 @@ namespace FloGen
         /// Number of variable quantities for each SKU across all orders
         /// </summary>
         private const int MaximumSkuQuantityVariance = 6;
+
+        /// <summary>
+        /// The characters to choose from when generating random email prefixes
+        /// </summary>
+        private const string AvailableCharsForRandomEmailPrefixes = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+        /// <summary>
+        /// The strings to choose from when generating random email suffixes
+        /// </summary>
+        private static readonly string[] AvailableStringsForRandomEmailSuffixes = new[]
+        {
+            "@yahoo.ru",
+            "@hotmail.co.uk",
+            "@gmail.com",
+            "@monarchy.gov"
+        };
         #endregion
 
         /// <summary>
@@ -55,6 +71,31 @@ namespace FloGen
         /// </summary>
         // ReSharper disable once InconsistentNaming
         private static readonly Random _random = new Random();
+
+        /// <summary>
+        /// Generate random emails
+        /// </summary>
+        private static string RandomEmail()
+        {
+            string prefix = new string(
+              Enumerable.Repeat(AvailableCharsForRandomEmailPrefixes, 16)
+                .Select(s => s[_random.Next(s.Length)])
+                .ToArray());
+
+            string suffix =
+              AvailableStringsForRandomEmailSuffixes[_random.Next(AvailableStringsForRandomEmailSuffixes.Length - 1)];
+
+            return $"{prefix}{suffix}";
+        }
+
+        private static DateTime RandomDateTime()
+        {
+            DateTime earliestDateTime = new DateTime(1992, 2, 21);
+            int range = (DateTime.Today - earliestDateTime).Days;
+            return earliestDateTime.AddDays(_random.Next(range));
+        }
+
+        // randomize order dates
 
         static void Main(string[] args)
         {
@@ -105,8 +146,9 @@ namespace FloGen
             {
                 CartOrder cartOrder = new CartOrder
                 {
-                    // Randomize the customer IDs
-                    CustomerId = _random.Next(1, MaximumNumberOfCustomers)
+                    CustomerId = _random.Next(1, MaximumNumberOfCustomers),
+                    Email = RandomEmail(),
+                    OrderDate = RandomDateTime()
                 };
 
                 // Randomize the number of cart items purchased by this customer
@@ -141,16 +183,19 @@ namespace FloGen
 
             // Default to CSV output
             bool outputCsv = true;
-            
+
             const char useJson = 'j';
+            const char useCsv = 'c';
             switch (jsonOrCsvResponse?.ToLowerInvariant()[0])
             {
                 case useJson:
                     outputCsv = false;
                     break;
+                case useCsv:
+                    break;
                 default:
-                  Console.WriteLine("Invalid response. Defaulting to CSV");
-                  break;
+                    Console.WriteLine("Invalid response. Defaulting to CSV");
+                    break;
             }
 
             string filePathToWriteTo = @$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
@@ -161,14 +206,16 @@ namespace FloGen
                 using StreamWriter streamWriter = new StreamWriter($"{filePathToWriteTo}.csv");
                 using CsvWriter csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
 
-                var flattenedManyRandomOrders = 
+                var flattenedManyRandomOrders =
                   from order in manyRandomOrders.Orders
                   from cartItem in order.CartItems
                   select new
                   {
-                    CustomerId = order.CustomerId,
-                    Sku = cartItem.Sku,
-                    Quantity = cartItem.Quantity
+                      CustomerId = order.CustomerId,
+                      Email = order.Email,
+                      Sku = cartItem.Sku,
+                      Quantity = cartItem.Quantity,
+                      OrderDate = order.OrderDate
                   };
 
                 csvWriter.WriteRecords(flattenedManyRandomOrders);
