@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace FloGen.Models
 {
-  public class ManyRandomOrders
-  {
-    [JsonPropertyName("orders")]
-    public ICollection<CartOrder> Orders { get; set; }
-  }
+    public class ManyRandomOrders
+    {
+        [JsonProperty("orders")]
+        public ICollection<CartOrder> Orders { get; set; }
+    }
 }
