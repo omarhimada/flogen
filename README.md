@@ -40,7 +40,7 @@ The parameters can be configured and the output is serialized to a local JSON fi
 Generation time: ~72 milliseconds (0.072s)
 ````JSON
 {
-  "Orders": [
+  "orders": [
     {
       "customerId": 2268,
       "email": "o9v1vmk57d9qmh36@hotmail.co.uk",
