@@ -35,15 +35,19 @@ The parameters can be configured and the output is serialized to a local JSON fi
   - AvailableStringsForRandomEmailSuffixes = ["@yahoo.ru", "@hotmail.co.uk", "@gmail.com", "@monarchy.gov"]
 
 #### Output:
-*RandomOrders-2020-03-10-20-38-50.json* (14 MB with indentation, 7 MB with no indentation)
-50,000 orders
+50,000 orders across 8,000 unique customers
+*RandomOrders-2020-03-19-13-51-16.csv* (2.9 MB)
+*RandomCustomers-2020-03-19-13-51-16.csv* (1.2 MB)
+![RandomOrders CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-orders.png)
+![RandomCustomers CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-customers.png)
+
+*Example JSON output:*
 Generation time: ~72 milliseconds (0.072s)
 ````JSON
 {
   "orders": [
     {
       "customerId": 2268,
-      "email": "o9v1vmk57d9qmh36@hotmail.co.uk",
       "cart": [
         {
           "sku": "72",
@@ -58,7 +62,6 @@ Generation time: ~72 milliseconds (0.072s)
     },
     {
       "customerId": 956,
-      "email": "gkd76xyus1kd5ap5@gmail.com",
       "cart": [
         {
           "sku": "96",
@@ -73,7 +76,6 @@ Generation time: ~72 milliseconds (0.072s)
     },
     {
       "customerId": 7777,
-      "email": "ils0jbwa2adk3kyx@hotmail.co.uk",
       "cart": [
         {
           "sku": "66",
@@ -86,3 +88,4 @@ Generation time: ~72 milliseconds (0.072s)
   ]
 }
 ````
+
