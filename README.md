@@ -38,10 +38,10 @@ The parameters can be configured and the output is serialized to a local JSON fi
 50,000 orders across 8,000 unique customers
 
 *RandomOrders-2020-03-19-13-51-16.csv* (2.9 MB)
-![RandomOrders CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-orders.png =400px)
+![RandomOrders CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-orders.png)
 
 *RandomCustomers-2020-03-19-13-51-16.csv* (1.2 MB)
-![RandomCustomers CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-customers.png =1024px)
+![RandomCustomers CSV](https://floyalty-ca.s3.ca-central-1.amazonaws.com/random-customers.png)
 
 *Example JSON output:*
 Generation time: ~72 milliseconds (0.072s)
