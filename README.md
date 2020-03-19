@@ -1,7 +1,7 @@
 # FloGen
-FloGen generates randomized data (e.g.: orders for an eCommerce website) for testing ML applications. For example, if you want to generate millions of dummy records to test your machine learning implementations, you can use FloGen to generate a configurable amount of random data to consume.
+FloGen generates randomized order and customer data for testing ML applications. For example, if you want to generate millions of dummy records to test your machine learning implementations, you can use FloGen to generate a configurable amount of random data to consume.
 
-Number of unique customer IDs, SKUs, the quantity of cart items in an order, and the quantity of each SKU in those cart items are all randomized.
+Number of unique customer IDs, SKUs, the quantity of cart items in an order, and the quantity of each SKU in those cart items are all randomized. The customer records associated to them will also be random.
 
 The parameters can be configured and the output is serialized to a local JSON file. 
 
