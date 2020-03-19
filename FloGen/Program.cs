@@ -55,6 +55,11 @@ namespace FloGen
         private const string AvailableCharsForRandomEmailPrefixes = "abcdefghijklmnopqrstuvwxyz0123456789";
 
         /// <summary>
+        /// The digits to choose from when generating random phone numbers
+        /// </summary>
+        private const string AvailableDigitsForPhoneNumbers = "0123456789";
+
+        /// <summary>
         /// The strings to choose from when generating random email suffixes
         /// </summary>
         private static readonly string[] AvailableStringsForRandomEmailSuffixes = new[]
@@ -88,17 +93,57 @@ namespace FloGen
             return $"{prefix}{suffix}";
         }
 
+        private static bool RandomBoolean() =>
+          _random.NextDouble() >= 0.5;
+
+        /// <summary>
+        /// Generate a random phone number and return its area code along with it
+        /// </summary>
+        /// <returns>Tuple of strings</returns>
+        private static (string, string) RandomAreaCodeAndPhoneNumber()
+        {
+            string phoneNumber = new string(
+              Enumerable.Repeat(AvailableDigitsForPhoneNumbers, 10)
+                .Select(s => s[_random.Next(s.Length)])
+                .ToArray());
+
+            string areaCode = phoneNumber.Substring(0, 3);
+
+            return (areaCode, phoneNumber);
+        }
+
+        /// <summary>
+        /// Pick a random DateTime between today and a specified earliest date
+        /// </summary>
         private static DateTime RandomDateTime()
         {
-            DateTime earliestDateTime = new DateTime(1992, 2, 21);
+            DateTime earliestDateTime = new DateTime(2018, 2, 21);
             int range = (DateTime.Today - earliestDateTime).Days;
             return earliestDateTime.AddDays(_random.Next(range));
         }
 
         /// <summary>
+        /// Generate a random float that is 2/3 proportional to the float given
+        /// </summary>
+        private static float RandomFloatTwoThirdsProportional(float numberOfDays) =>
+          (float)(_random.NextDouble() * numberOfDays * 0.66f);
+
+        /// <summary>
+        /// Generate a random float that is 1/4 proportional to the float given
+        /// </summary>
+        private static float RandomFloatOneQuarterProportional(float number) =>
+          (float)(_random.NextDouble() * number * 0.25f);
+
+        /// <summary>
+        /// Generate a random float that is 2/1 proportional to the float given
+        /// </summary>
+        private static float RandomFloatTwiceProportional(float number) =>
+          (float)(_random.NextDouble() * number * 2f);
+
+        /// <summary>
         /// Generation complete - output either CSV or JSON
         /// </summary>
-        private static void OutputData(ManyRandomOrders ordersToOutput)
+        private static void OutputData(ManyRandomOrders ordersToOutput, List<Customer> customersToOutput)
         {
             Console.WriteLine("Output CSV or JSON? [cC]|[jJ]");
             string jsonOrCsvResponse = Console.ReadLine();
@@ -120,33 +165,50 @@ namespace FloGen
                     break;
             }
 
-            string filePathToWriteTo = @$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
+            string ordersFilePathToWriteTo = @$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
+            string customersFilePathToWriteTo = @$"RandomCustomers-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
 
             if (outputCsv)
             {
                 // Write the random orders to a CSV file
-                using StreamWriter streamWriter = new StreamWriter($"{filePathToWriteTo}.csv");
-                using CsvWriter csvWriter = new CsvWriter(streamWriter, CultureInfo.InvariantCulture);
+                using StreamWriter ordersStreamWriter = new StreamWriter($"{ordersFilePathToWriteTo}.csv");
+                using CsvWriter ordersCsvWriter = new CsvWriter(ordersStreamWriter, CultureInfo.InvariantCulture);
+                {
+                    var flattenedManyRandomOrders =
+                      from order in ordersToOutput.Orders
+                      from cartItem in order.CartItems
+                      select new
+                      {
+                          CustomerId = order.CustomerId,
+                          Sku = cartItem.Sku,
+                          Quantity = cartItem.Quantity,
+                          OrderDate = order.OrderDate
+                      };
 
-                var flattenedManyRandomOrders =
-                  from order in ordersToOutput.Orders
-                  from cartItem in order.CartItems
-                  select new
-                  {
-                      CustomerId = order.CustomerId,
-                      Email = order.Email,
-                      Sku = cartItem.Sku,
-                      Quantity = cartItem.Quantity,
-                      OrderDate = order.OrderDate
-                  };
+                    ordersCsvWriter.WriteRecords(flattenedManyRandomOrders);
+                }
 
-                csvWriter.WriteRecords(flattenedManyRandomOrders);
+                if (customersToOutput != null)
+                {
+                    // Write the customers to a CSV file
+                    using StreamWriter customersStreamWriter = new StreamWriter($"{customersFilePathToWriteTo}.csv");
+                    using CsvWriter customersCsvWriter = new CsvWriter(customersStreamWriter, CultureInfo.InvariantCulture);
+                    {
+                        customersCsvWriter.WriteRecords(customersToOutput);
+                    }
+                }
             }
             else
             {
                 // Serialize the random orders and write to a JSON file
-                string json = JsonConvert.SerializeObject(ordersToOutput, Formatting.None); // None for file size
-                File.WriteAllText(@$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.json", json);
+                string ordersJson = JsonConvert.SerializeObject(ordersToOutput, Formatting.None); // None for file size
+                File.WriteAllText(@$"{ordersFilePathToWriteTo}.json", ordersJson);
+
+                if (customersToOutput != null)
+                {
+                    string customersJson = JsonConvert.SerializeObject(customersToOutput, Formatting.None); // None for file size
+                    File.WriteAllText(@$"{customersFilePathToWriteTo}.json", customersJson);
+                }
             }
         }
 
@@ -161,7 +223,7 @@ namespace FloGen
 
             if (args.Length == 1 && bool.TryParse(args[0], out bool useRetailDat))
             {
-                // Use retail.dat file to generate orders with not-so-random customer IDs, emails and order dates
+                #region Use retail.dat file to generate orders with not-so-random customer IDs, emails and order dates
                 if (useRetailDat)
                 {
                     ManyRandomOrders notSoRandomOrders = new ManyRandomOrders
@@ -190,7 +252,6 @@ namespace FloGen
                         CartOrder cartOrder = new CartOrder
                         {
                             CustomerId = _random.Next(1, MaximumNumberOfCustomers),
-                            Email = RandomEmail(),
                             OrderDate = RandomDateTime(),
                             CartItems = cartItems
                         };
@@ -203,8 +264,9 @@ namespace FloGen
 
                     Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
 
-                    OutputData(notSoRandomOrders);
+                    OutputData(notSoRandomOrders, null);
                 }
+                #endregion
             }
             else
             {
@@ -229,7 +291,7 @@ namespace FloGen
 
                 // Random cart items
                 CartItem[] manyRandomCartItems =
-                  allSkuCombinations
+                  allSkuCombinationsWithVariableDuplicates
                     .Select(sku =>
                       new CartItem
                       {
@@ -251,10 +313,10 @@ namespace FloGen
 
                 for (int orderIndex = 0; orderIndex < OrdersToGenerate; orderIndex++)
                 {
+
                     CartOrder cartOrder = new CartOrder
                     {
                         CustomerId = _random.Next(1, MaximumNumberOfCustomers),
-                        Email = RandomEmail(),
                         OrderDate = RandomDateTime()
                     };
 
@@ -279,12 +341,83 @@ namespace FloGen
                     manyRandomOrders.Orders.Add(cartOrder);
                 }
 
+                // Group orders by customer
+                List<Customer> manyRandomCustomers =
+                  (from order in manyRandomOrders.Orders
+                   group order by order.CustomerId
+                   into grouped
+                   select new Customer
+                   {
+                       CustomerId = grouped.Key,
+                       AccountLength = (float)(DateTime.Today - grouped.Min(i => i.OrderDate)).TotalDays,
+                       DaysSinceLastPurchase = (float)(DateTime.Today - grouped.Max(i => i.OrderDate)).TotalDays,
+                       Email = RandomEmail()
+                   }).ToList();
+
+                foreach (Customer customer in manyRandomCustomers)
+                {
+                    (string areaCode, string phoneNumber) = RandomAreaCodeAndPhoneNumber();
+                    customer.AreaCode = areaCode;
+                    customer.PhoneNumber = phoneNumber;
+
+                    // Assume churned if they haven't purchased in 6 months
+                    customer.Churned = customer.DaysSinceLastPurchase > 182.5;
+
+                    customer.Voice = RandomBoolean();
+
+                    if (customer.Voice)
+                    {
+                        bool internationalPlan = RandomBoolean();
+                        if (internationalPlan)
+                        {
+                            #region International calls
+                            // Calls max 2/3 of account length
+                            customer.TotalInternationalCalls = RandomFloatTwoThirdsProportional(customer.AccountLength);
+                            // Minutes max 2/1 of number of calls
+                            customer.TotalInternationalMinutes = RandomFloatTwiceProportional(customer.TotalInternationalCalls);
+                            // Charges max 1/4 of number of minutes
+                            customer.TotalInternationalCharges = RandomFloatOneQuarterProportional(customer.TotalInternationalMinutes);
+                            #endregion
+                        }
+
+                        #region Daytime calls
+                        // Calls max 2/3 of account length
+                        customer.TotalDaytimeCalls = RandomFloatTwoThirdsProportional(customer.AccountLength);
+                        // Minutes max 2/1 of number of calls
+                        customer.TotalDaytimeMinutes = RandomFloatTwiceProportional(customer.TotalDaytimeCalls);
+                        // Charges max 1/4 of number of minutes
+                        customer.TotalDaytimeCharges = RandomFloatOneQuarterProportional(customer.TotalDaytimeMinutes);
+                        #endregion
+
+                        #region Evening calls
+                        // Calls max 2/3 of account length
+                        customer.TotalEveningCalls = RandomFloatTwoThirdsProportional(customer.AccountLength);
+                        // Minutes max 2/1 of number of calls
+                        customer.TotalEveningMinutes = RandomFloatTwiceProportional(customer.TotalEveningCalls);
+                        // Charges max 1/4 of number of minutes
+                        customer.TotalEveningCharges = RandomFloatOneQuarterProportional(customer.TotalEveningMinutes);
+                        #endregion
+
+                        #region Night calls
+                        // Calls max 2/3 of account length
+                        customer.TotalNightCalls = RandomFloatTwoThirdsProportional(customer.AccountLength);
+                        // Minutes max 2/1 of number of calls
+                        customer.TotalNightMinutes = RandomFloatTwiceProportional(customer.TotalNightCalls);
+                        // Charges max 1/4 of number of minutes
+                        customer.TotalNightCharges = RandomFloatOneQuarterProportional(customer.TotalNightMinutes);
+                        #endregion
+                    }
+
+                    customer.NumberOfCustomerServiceCalls = RandomFloatTwoThirdsProportional(customer.AccountLength);
+                    customer.NumberOfMessages = RandomFloatTwoThirdsProportional(customer.AccountLength);
+                }
+
                 // Don't include serialization in generation time metric
                 sw.Stop();
 
                 Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
 
-                OutputData(manyRandomOrders);
+                OutputData(manyRandomOrders, manyRandomCustomers);
             }
         }
     }
