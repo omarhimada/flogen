@@ -3,7 +3,7 @@ FloGen generates randomized order and customer data for testing ML applications.
 
 Number of unique customer IDs, SKUs, the quantity of cart items in an order, and the quantity of each SKU in those cart items are all randomized. The customer records associated to them will also be random.
 
-The parameters can be configured and the output is serialized to a local JSON file. 
+The parameters can be configured and the output is serialized to a local CSV or JSON file. 
 
 #### Example input:
 - **Number of random orders to generate**
