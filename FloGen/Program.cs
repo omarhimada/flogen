@@ -252,6 +252,7 @@ namespace FloGen
                         CartOrder cartOrder = new CartOrder
                         {
                             CustomerId = _random.Next(1, MaximumNumberOfCustomers),
+                            Email = RandomEmail(),
                             OrderDate = RandomDateTime(),
                             CartItems = cartItems
                         };
