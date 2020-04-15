@@ -30,6 +30,11 @@ namespace FloGen
         private const int MaximumNumberOfCustomers = 8000;
 
         /// <summary>
+        /// Customer IDs will start at this number 
+        /// </summary>
+        private const int StartCustomersAt = 10000;
+
+        /// <summary>
         /// Maximum length of the SKU to use when generating cart orders
         /// </summary>
         private const int MaximumLengthOfSku = 2;
@@ -251,7 +256,7 @@ namespace FloGen
 
                         CartOrder cartOrder = new CartOrder
                         {
-                            CustomerId = _random.Next(1, MaximumNumberOfCustomers),
+                            CustomerId = _random.Next(StartCustomersAt, StartCustomersAt + MaximumNumberOfCustomers),
                             OrderDate = RandomDateTime(),
                             CartItems = cartItems
                         };
@@ -316,7 +321,7 @@ namespace FloGen
 
                     CartOrder cartOrder = new CartOrder
                     {
-                        CustomerId = _random.Next(1, MaximumNumberOfCustomers),
+                        CustomerId = _random.Next(StartCustomersAt, StartCustomersAt + MaximumNumberOfCustomers),
                         OrderDate = RandomDateTime()
                     };
 
