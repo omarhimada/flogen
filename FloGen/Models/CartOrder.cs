@@ -9,6 +9,9 @@ namespace FloGen.Models
         [JsonProperty("customerId")]
         public int CustomerId { get; set; }
 
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
         [JsonProperty("cart")]
         public IEnumerable<CartItem> CartItems { get; set; }
 
