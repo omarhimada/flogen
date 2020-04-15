@@ -145,25 +145,86 @@ namespace FloGen
         private static float RandomFloatTwiceProportional(float number) =>
           (float)(_random.NextDouble() * number * 2f);
 
+        // ReSharper disable once InconsistentNaming
+        private static void OutputRandomCsv(
+          ManyRandomOrders ordersToOutput,
+          List<Customer> customersToOutput,
+          string ordersFilePathToWriteTo,
+          string customersFilePathToWriteTo)
+        {
+            // Write the random orders to a CSV file
+            using StreamWriter ordersStreamWriter = new StreamWriter($"{ordersFilePathToWriteTo}.csv");
+            using CsvWriter ordersCsvWriter = new CsvWriter(ordersStreamWriter, CultureInfo.InvariantCulture);
+            {
+                var flattenedManyRandomOrders =
+                  from order in ordersToOutput.Orders
+                  from cartItem in order.CartItems
+                  select new
+                  {
+                      CustomerId = order.CustomerId,
+                      Sku = cartItem.Sku,
+                      Quantity = cartItem.Quantity,
+                      OrderDate = order.OrderDate
+                  };
+
+                ordersCsvWriter.WriteRecords(flattenedManyRandomOrders);
+            }
+
+            if (customersToOutput != null)
+            {
+                // Write the customers to a CSV file
+                using StreamWriter customersStreamWriter = new StreamWriter($"{customersFilePathToWriteTo}.csv");
+                using CsvWriter customersCsvWriter = new CsvWriter(customersStreamWriter, CultureInfo.InvariantCulture);
+                {
+                    customersCsvWriter.WriteRecords(customersToOutput);
+                }
+            }
+        }
+
+        // ReSharper disable once InconsistentNaming
+        private static void OutputRandomJson(
+          ManyRandomOrders ordersToOutput,
+          List<Customer> customersToOutput,
+          string ordersFilePathToWriteTo,
+          string customersFilePathToWriteTo)
+        {
+            // Serialize the random orders and write to a JSON file
+            string ordersJson = JsonConvert.SerializeObject(ordersToOutput, Formatting.None); // None for file size
+            File.WriteAllText(@$"{ordersFilePathToWriteTo}.json", ordersJson);
+
+            if (customersToOutput != null)
+            {
+                string customersJson = JsonConvert.SerializeObject(customersToOutput, Formatting.None); // None for file size
+                File.WriteAllText(@$"{customersFilePathToWriteTo}.json", customersJson);
+            }
+        }
+
         /// <summary>
-        /// Generation complete - output either CSV or JSON
+        /// Generation complete - output CSV, JSON or both
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         private static void OutputData(ManyRandomOrders ordersToOutput, List<Customer> customersToOutput)
         {
-            Console.WriteLine("Output CSV or JSON? [cC]|[jJ]");
+            Console.WriteLine("Output CSV or JSON or both? [cC]|[jJ]|[bB]");
             string jsonOrCsvResponse = Console.ReadLine();
 
             // Default to CSV output
             bool outputCsv = true;
 
+            bool outputBoth = false;
+
             const char useJson = 'j';
             const char useCsv = 'c';
+            const char useBoth = 'b';
             switch (jsonOrCsvResponse?.ToLowerInvariant()[0])
             {
                 case useJson:
                     outputCsv = false;
                     break;
                 case useCsv:
+                    break;
+                case useBoth:
+                    outputBoth = true;
                     break;
                 default:
                     Console.WriteLine("Invalid response. Defaulting to CSV");
@@ -173,46 +234,20 @@ namespace FloGen
             string ordersFilePathToWriteTo = @$"RandomOrders-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
             string customersFilePathToWriteTo = @$"RandomCustomers-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}";
 
-            if (outputCsv)
+            if (outputBoth)
             {
-                // Write the random orders to a CSV file
-                using StreamWriter ordersStreamWriter = new StreamWriter($"{ordersFilePathToWriteTo}.csv");
-                using CsvWriter ordersCsvWriter = new CsvWriter(ordersStreamWriter, CultureInfo.InvariantCulture);
-                {
-                    var flattenedManyRandomOrders =
-                      from order in ordersToOutput.Orders
-                      from cartItem in order.CartItems
-                      select new
-                      {
-                          CustomerId = order.CustomerId,
-                          Sku = cartItem.Sku,
-                          Quantity = cartItem.Quantity,
-                          OrderDate = order.OrderDate
-                      };
-
-                    ordersCsvWriter.WriteRecords(flattenedManyRandomOrders);
-                }
-
-                if (customersToOutput != null)
-                {
-                    // Write the customers to a CSV file
-                    using StreamWriter customersStreamWriter = new StreamWriter($"{customersFilePathToWriteTo}.csv");
-                    using CsvWriter customersCsvWriter = new CsvWriter(customersStreamWriter, CultureInfo.InvariantCulture);
-                    {
-                        customersCsvWriter.WriteRecords(customersToOutput);
-                    }
-                }
+                OutputRandomCsv(ordersToOutput, customersToOutput, ordersFilePathToWriteTo, customersFilePathToWriteTo);
+                OutputRandomJson(ordersToOutput, customersToOutput, ordersFilePathToWriteTo, customersFilePathToWriteTo);
             }
             else
             {
-                // Serialize the random orders and write to a JSON file
-                string ordersJson = JsonConvert.SerializeObject(ordersToOutput, Formatting.None); // None for file size
-                File.WriteAllText(@$"{ordersFilePathToWriteTo}.json", ordersJson);
-
-                if (customersToOutput != null)
+                if (outputCsv)
                 {
-                    string customersJson = JsonConvert.SerializeObject(customersToOutput, Formatting.None); // None for file size
-                    File.WriteAllText(@$"{customersFilePathToWriteTo}.json", customersJson);
+                    OutputRandomCsv(ordersToOutput, customersToOutput, ordersFilePathToWriteTo, customersFilePathToWriteTo);
+                }
+                else
+                {
+                    OutputRandomJson(ordersToOutput, customersToOutput, ordersFilePathToWriteTo, customersFilePathToWriteTo);
                 }
             }
         }
