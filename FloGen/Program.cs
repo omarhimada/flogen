@@ -253,8 +253,10 @@ namespace FloGen
         }
 
         /// <summary>
+        /// Generate random orders and customers. Include some telecom fields on the customer to mimic
+        /// a common Kaggle dataset (telecom customers) - but associate customer IDs to the random orders
         /// </summary>
-        /// <param name="args">true to use retail.dat (from http://fimi.uantwerpen.be/data/)</param>
+        /// <param name="args">true to use retail.dat (from http://fimi.uantwerpen.be/data/) for the orders</param>
         static void Main(string[] args)
         {
             // Used for outputting generation time
@@ -354,7 +356,6 @@ namespace FloGen
 
                 for (int orderIndex = 0; orderIndex < OrdersToGenerate; orderIndex++)
                 {
-
                     CartOrder cartOrder = new CartOrder
                     {
                         CustomerId = _random.Next(StartCustomersAt, StartCustomersAt + MaximumNumberOfCustomers),
@@ -395,6 +396,7 @@ namespace FloGen
                        Email = RandomEmail()
                    }).ToList();
 
+                // Make some telecom-esque customers with the same customer IDs present in our random orders
                 foreach (Customer customer in manyRandomCustomers)
                 {
                     (string areaCode, string phoneNumber) = RandomAreaCodeAndPhoneNumber();
