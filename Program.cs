@@ -88,7 +88,8 @@ namespace FloGen
         private static string RandomEmail()
         {
             string prefix = new string(
-              Enumerable.Repeat(AvailableCharsForRandomEmailPrefixes, 16)
+              Enumerable
+                .Repeat(AvailableCharsForRandomEmailPrefixes, 16)
                 .Select(s => s[_random.Next(s.Length)])
                 .ToArray());
 
@@ -461,6 +462,10 @@ namespace FloGen
                 Console.WriteLine($"Generation time: {sw.ElapsedMilliseconds} milliseconds.");
 
                 OutputData(manyRandomOrders, manyRandomCustomers);
+
+                //
+                Console.WriteLine("Done. Press any key to exit.");
+                Console.Read();
             }
         }
     }

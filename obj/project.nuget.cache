@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "tu4KXGjyOj4=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\adosi\\source\\repos\\flogen\\FloGen.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\adosi\\.nuget\\packages\\csvhelper\\33.1.0\\csvhelper.33.1.0.nupkg.sha512",
+    "C:\\Users\\adosi\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512"
+  ],
+  "logs": []
+}
