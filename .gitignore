@@ -7,3 +7,7 @@
 /FloGen/obj
 /FloGen/*.user
 .DS_Store
+/FloGen2/bin/Debug/net10.0
+/FloGen2/obj
+/FloGen2/.vs/FloGen2
+/.vs
